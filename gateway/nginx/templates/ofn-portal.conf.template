@@ -1,0 +1,76 @@
+server {
+
+  listen 443 ssl ;
+  listen [::]:443 ssl ;
+  listen 443 quic ;
+  listen [::]:443 quic ;
+
+  http2 on;
+  keepalive_requests 1000;
+
+  proxy_buffer_size         128k;
+  proxy_buffers             4 256k;
+  proxy_busy_buffers_size   256k;
+
+  server_name  $OFN_PORTAL_DOMAIN_NAME;
+
+  ssl_certificate         /opt/ssl/ofn/tls.crt;
+  ssl_certificate_key     /opt/ssl/ofn/tls.key;
+
+  # Custom error handling.
+  proxy_intercept_errors on;
+
+  error_page 404 @404_page;
+  location @404_page {
+    internal;
+    rewrite ^ /404.html break;
+    proxy_pass http://nkd-portal-data-gov-cz;
+  }
+
+  # Redirect root access to the data portal.
+
+  location =/ {
+    include hsts-cors.conf;
+
+    return 302 https://$DATA_PORTAL_DOMAIN_NAME/ofn/;
+  }
+
+  # nkd-design-system
+
+  location /assets/design-system {
+    include hsts-cors.conf;
+
+    proxy_cache global_cache;
+    proxy_cache_valid any 30m;
+    # We can use this for debugging.
+    # add_header X-Cache-Status $upstream_cache_status;
+
+    proxy_pass http://nkd-design-system/design-system/;
+    proxy_pass_request_headers          on;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_intercept_errors              on;
+  }
+
+  # nkd-portal-ofn-data-gov-cz
+
+  location /api/v2/portal-ofn-data-gov-cz/reload {
+    include hsts-cors.conf;
+
+    proxy_pass http://nkd-portal-ofn-gov-cz/api/on-github-push-data.php;
+    proxy_pass_request_headers          on;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_intercept_errors              on;
+  }
+
+  location / {
+    include hsts-cors.conf;
+
+    proxy_pass http://nkd-portal-ofn-gov-cz/;
+    proxy_pass_request_headers          on;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_intercept_errors              on;
+  }
+}

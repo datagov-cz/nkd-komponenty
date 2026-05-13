@@ -1,0 +1,72 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@ldf/server/^3.0.0/components/context.jsonld",
+  "@id": "urn:ldf-server:my",
+  "import": "preset-qpf:config-defaults.json",
+  "title": "Národní katalog otevřených dat - Triple Pattern Fragments Server",
+  "protocol": "http",
+  "baseURL": "{LDF_BASE_URL}",
+  "datasources": [
+    {
+      "@id": "{LDF_BASE_URL}/datový-zdroj/HdtNKOD",
+      "@type": "HdtDatasource",
+      "datasourceTitle": "NKOD TPF over HDT",
+      "description": "NKOD",
+      "datasourcePath": "nkod-ldf",
+      "hdtFile": "/data/nkod.hdt"
+    },
+    {
+      "@id": "{LDF_BASE_URL}/datový-zdroj/SparqlNKOD",
+      "@type": "SparqlDatasource",
+      "datasourceTitle": "NKOD SPARQL",
+      "description": "NKOD TPF over Virtuoso SPARQL",
+      "datasourcePath": "nkod-sparql-ldf",
+      "sparqlEndpoint": "{LDF_SPARQL}"
+    }
+  ],
+  "prefixes": [
+    {
+      "prefix": "rdf",
+      "uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    },
+    {
+      "prefix": "rdfs",
+      "uri": "http://www.w3.org/2000/01/rdf-schema#"
+    },
+    {
+      "prefix": "xsd",
+      "uri": "http://www.w3.org/2001/XMLSchema#"
+    },
+    {
+      "prefix": "dc",
+      "uri": "http://purl.org/dc/terms/"
+    },
+    {
+      "prefix": "foaf",
+      "uri": "http://xmlns.com/foaf/0.1/"
+    },
+    {
+      "prefix": "dbpedia",
+      "uri": "http://dbpedia.org/resource/"
+    },
+    {
+      "prefix": "dbpedia-owl",
+      "uri": "http://dbpedia.org/ontology/"
+    },
+    {
+      "prefix": "dbpprop",
+      "uri": "http://dbpedia.org/property/"
+    },
+    {
+      "prefix": "hydra",
+      "uri": "http://www.w3.org/ns/hydra/core#"
+    },
+    {
+      "prefix": "void",
+      "uri": "http://rdfs.org/ns/void#"
+    },
+    {
+      "prefix": "dcat",
+      "uri": "http://www.w3.org/ns/dcat#"
+    }
+  ]
+}

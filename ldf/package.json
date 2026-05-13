@@ -1,0 +1,10 @@
+{
+  "name": "nkd-ldf",
+  "version": "1.0.0",
+  "license": "ISC",
+  "scripts": {},
+  "dependencies": {
+    "@ldf/server": "^3.3.0",
+    "express": "^5.1.0"
+  }
+}

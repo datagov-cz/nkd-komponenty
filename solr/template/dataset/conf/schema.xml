@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://solr.apache.org/guide/solr/latest/indexing-guide/schema-elements.html -->
+<schema name="dataset" version="1.6">
+
+  <types>
+
+    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+      <analyzer type="index">
+        <tokenizer name="standard"/>
+        <filter name="stop" words="stopwords.txt" ignoreCase="true"/>
+        <filter name="lowercase"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer name="standard"/>
+        <filter name="stop" words="stopwords.txt" ignoreCase="true"/>
+        <filter name="synonymGraph" ignoreCase="true" synonyms="synonyms.txt"/>
+        <filter name="lowercase"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="ascii_string" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer name="whitespace"/>
+        <filter name="lowercase"/>
+        <filter name="asciiFolding" preserveOriginal="false"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="string_icu_cs" class="solr.ICUCollationField" strength="primary" locale="cs"/>
+
+    <fieldType name="string_icu_en" class="solr.ICUCollationField" strength="primary" locale="en"/>
+
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true"/>
+
+    <fieldType name="strings" class="solr.StrField" sortMissingLast="true" docValues="true" multiValued="true"/>
+
+    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+
+    <fieldType name="pdate" class="solr.DatePointField" multiValued="false"/>
+
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+
+    <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+
+  </types>
+
+  <fields>
+
+    <field name="iri" type="string" required="true" stored="true"/>
+
+    <field name="_version_" type="plong" indexed="false" stored="false"/>
+
+    <field name="modified" type="pdate"/>
+
+    <field name="accrual_periodicity" type="string" multiValued="false"/>
+
+    <field name="publisher" type="string" multiValued="false" indexed="true"/>
+
+    <field name="file_type" type="strings" indexed="true"/>
+
+    <field name="license" type="strings" indexed="true"/>
+
+    <field name="theme" type="strings"/>
+
+    <field name="temporal_start" type="pdate" docValues="true"/>
+
+    <field name="temporal_end" type="pdate" docValues="true"/>
+
+    <field name="spatial" type="strings"/>
+
+    <field name="is_part_of" type="string" multiValued="false" indexed="true"/>
+
+    <field name="data_service_type" type="strings" indexed="true"/>
+
+    <field name="with_data_service" type="booleans"/>
+
+    <field name="title_cs" type="string" multiValued="false"/>
+
+    <field name="title_cs_query" type="ascii_string" multiValued="false"/>
+
+    <field name="title_cs_sort" type="string_icu_cs" multiValued="false" docValues="true"/>
+
+    <field name="description_cs" type="string" multiValued="false"/>
+
+    <field name="keyword_cs" type="strings"/>
+
+    <field name="title_en" type="string" multiValued="false"/>
+
+    <field name="title_en_query" type="ascii_string" multiValued="false"/>
+
+    <field name="title_en_sort" type="string_icu_en" multiValued="false" docValues="true"/>
+
+    <field name="description_en" type="string" multiValued="false"/>
+
+    <field name="keyword_en" type="strings"/>
+
+    <field name="vdf_codelist" type="boolean" multiValued="false"/>
+
+    <field name="vdf_public_data" type="boolean" multiValued="false"/>
+
+    <field name="hvd_category" type="strings"/>
+
+    <field name="applicable_legislation" type="strings"/>
+
+    <field name="_text_" type="ascii_string" multiValued="true" indexed="true" stored="false"/>
+
+  </fields>
+
+  <copyField source="description_cs" dest="_text_"/>
+
+  <copyField source="description_en" dest="_text_"/>
+
+  <copyField source="keyword_cs" dest="_text_"/>
+
+  <copyField source="keyword_en" dest="_text_"/>
+
+  <copyField source="title_cs" dest="_text_"/>
+
+  <copyField source="title_cs_sort" dest="title_cs_query"/>
+
+  <copyField source="title_en" dest="_text_"/>
+
+  <copyField source="title_en_sort" dest="title_en_query"/>
+
+  <uniqueKey>iri</uniqueKey>
+
+</schema>

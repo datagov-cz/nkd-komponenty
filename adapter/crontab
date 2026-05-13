@@ -1,0 +1,6 @@
+# Define jobs to be executed.
+10 */2 * * * nkd /opt/adapter/applications-list.sh
+11 */2 * * * nkd /opt/adapter/applications-image.sh
+15 */2 * * * nkd /opt/adapter/suggestions-list.sh
+20 */2 * * * nkd /opt/adapter/allowed-publishers-list.sh
+25 */2 * * * nkd /opt/adapter/registrations.sh

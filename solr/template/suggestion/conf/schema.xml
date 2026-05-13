@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://solr.apache.org/guide/solr/latest/indexing-guide/schema-elements.html -->
+<schema name="suggestion" version="1.6">
+
+  <types>
+
+    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+      <analyzer type="index">
+        <tokenizer name="standard"/>
+        <filter name="stop" words="stopwords.txt" ignoreCase="true"/>
+        <filter name="lowercase"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer name="standard"/>
+        <filter name="stop" words="stopwords.txt" ignoreCase="true"/>
+        <filter name="synonymGraph" ignoreCase="true" synonyms="synonyms.txt"/>
+        <filter name="lowercase"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="ascii_string" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer name="whitespace"/>
+        <filter name="lowercase"/>
+        <filter name="asciiFolding" preserveOriginal="false"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="string_icu_cs" class="solr.ICUCollationField" strength="primary" locale="cs"/>
+
+    <fieldType name="string_icu_en" class="solr.ICUCollationField" strength="primary" locale="en"/>
+
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true"/>
+
+    <fieldType name="strings" class="solr.StrField" sortMissingLast="true" docValues="true" multiValued="true"/>
+
+    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+
+    <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+
+  </types>
+
+  <fields>
+
+    <field name="iri" type="string" required="true" stored="true"/>
+
+    <field name="_version_" type="plong" indexed="false" stored="false"/>
+
+    <field name="title_cs" type="string" indexed="false"/>
+
+    <field name="title_cs_sort" type="string_icu_cs" docValues="true"/>
+
+    <field name="title_cs_query" type="ascii_string"/>
+
+    <field name="description_cs" type="string"/>
+
+    <field name="theme" type="strings"/>
+
+    <field name="created" type="pdate" indexed="false"/>
+
+    <field name="publisher" type="string"/>
+
+    <field name="state" type="string"/>
+
+    <field name="mandatory_106" type="boolean" />
+
+    <field name="publisher_cs" type="string" indexed="false"/>
+
+    <field name="obstacle_special_regulation" type="boolean" />
+
+    <field name="open_data_compatible" type="boolean" />
+
+    <field name="obstacle_106" type="boolean" />
+
+    <field name="dataset" type="strings"/>
+
+    <field name="publication_plan" type="string" indexed="false" docValues="false"/>
+
+    <field name="_text_" type="ascii_string" multiValued="true" indexed="true" stored="false"/>
+
+  </fields>
+
+  <copyField source="title_cs" dest="title_cs_sort"/>
+
+  <copyField source="title_cs" dest="title_cs_query"/>
+
+  <copyField source="title_cs" dest="_text_"/>
+
+  <copyField source="description_cs" dest="_text_"/>
+
+  <uniqueKey>iri</uniqueKey>
+
+</schema>

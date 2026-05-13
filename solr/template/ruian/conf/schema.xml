@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://solr.apache.org/guide/solr/latest/indexing-guide/schema-elements.html -->
+<schema name="ruian" version="1.6">
+
+  <types>
+
+    <fieldType name="ascii_string" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer name="whitespace"/>
+        <filter name="lowercase"/>
+        <filter name="asciiFolding" preserveOriginal="false"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="string_icu_cs" class="solr.ICUCollationField" strength="primary" locale="cs"/>
+
+    <fieldType name="string_icu_en" class="solr.ICUCollationField" strength="primary" locale="en"/>
+
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true"/>
+
+    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+
+  </types>
+
+  <fields>
+
+    <field name="_version_" type="plong" indexed="false" stored="false"/>
+
+    <field name="code" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+
+    <field name="cs" type="ascii_string" indexed="true" docValues="false"/>
+
+    <field name="en" type="ascii_string" indexed="true" docValues="false"/>
+
+    <field name="type" type="string" indexed="true" docValues="false"/>
+
+    <field name="notation" type="string" indexed="true" docValues="false"/>
+
+  </fields>
+
+  <uniqueKey>code</uniqueKey>
+
+</schema>
