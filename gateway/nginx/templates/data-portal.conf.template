@@ -1,29 +1,43 @@
-# We use one cache for static and one for dynamic content.
+
 proxy_cache_path /var/cache/nginx/global_cache/ levels=1:2 keys_zone=global_cache:64m max_size=8g inactive=60m use_temp_path=off;
 
 server {
 
+  server_name  $DATA_PORTAL_DOMAIN_NAME;
+
+  # HTTP/2 over TCP (fallback)
   listen 443 ssl ;
   listen [::]:443 ssl ;
+  http2 on;
+
+  # HTTP/3 over QUIC (UDP)
   listen 443 quic ;
   listen [::]:443 quic ;
+  http3 on;
 
-  http2 on;
-  keepalive_requests 1000;
+  # QUIC retry for connection validation
+  quic_retry on;
 
+  # 0-RTT connection resumption
+  # ssl_early_data on;
+  # ssl_session_tickets on;
+
+  # Advertise HTTP/3 to clients
+  # add_header Alt-Svc 'h3=":443"; ma=86400' always;
+
+  # We need bigger proxy buffer.
   proxy_buffer_size         128k;
   proxy_buffers             4 256k;
   proxy_busy_buffers_size   256k;
 
-  server_name  $DATA_PORTAL_DOMAIN_NAME;
-
+  # TLS
   ssl_certificate         /opt/ssl/data/tls.crt;
   ssl_certificate_key     /opt/ssl/data/tls.key;
 
   # Set custom DNS server resolver.
   resolver     $RESOLVER valid=10s;
 
-  # Custom error handling.
+  # We utilize custom error handling.
   proxy_intercept_errors on;
 
   error_page 404 @404_page;
@@ -45,7 +59,7 @@ server {
     # We can use this for debugging.
     # add_header X-Cache-Status $upstream_cache_status;
 
-    proxy_pass http://nkd-design-system/design-system/;
+    proxy_pass http://nkd-design-system/;
     proxy_pass_request_headers          on;
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
