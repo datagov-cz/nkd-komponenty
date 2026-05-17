@@ -9,19 +9,14 @@ RUN addgroup --gid $USER "nkod" \
     && useradd --gid "nkod" --uid $USER "nkod" --create-home
 
 # Copy entrypoint.
-COPY ./orchestrator-entrypoint.sh/ /
-RUN chown nkod:nkod /orchestrator-entrypoint.sh && chmod 0744 /orchestrator-entrypoint.sh
+COPY --chown=nkod:nkod --chmod=0744  ./orchestrator-entrypoint.sh /
 
 # Copy other script
 WORKDIR /opt/orchestrator
-COPY ./script/* ./
-RUN chown nkod:nkod *.sh && chmod 0744 *.sh
+COPY --chown=nkod:nkod --chmod=0744 ./script/* ./
 
 # Setup cron.
 COPY lp-etl-crontab /etc/cron.d/lp-etl-crontab
 
-# Set starting location.
 WORKDIR /
-
-# Creating entry point for cron.
 CMD ["/orchestrator-entrypoint.sh"]
