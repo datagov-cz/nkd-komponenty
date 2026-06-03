@@ -70,6 +70,8 @@
 
     <field name="is_part_of" type="string" multiValued="false" indexed="true"/>
 
+    <field name="type" type="strings" indexed="true"/>
+
     <field name="data_service_type" type="strings" indexed="true"/>
 
     <field name="with_data_service" type="booleans"/>
