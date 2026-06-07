@@ -1,0 +1,1 @@
+DB.DBA.RDF_OBJ_FT_RULE_ADD (null, null, 'All');
