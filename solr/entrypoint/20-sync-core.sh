@@ -17,11 +17,11 @@ create_or_update_core() {
 
   if [ -d "$DATA_DIR/$CORE_NAME" ]; then
     # Get the hash for the core.
-    local CORE_HASH_FILE = "$CORE_DIRECTORY/core.sha256"
+    local CORE_HASH_FILE="$CORE_DIRECTORY/core.sha256"
     CORE_HASH="";
     [[ -f "$CORE_HASH_FILE" ]] && CORE_HASH="$(cat "$CORE_HASH_FILE")"
     # Get the hash for the template.
-    local TEMPLATE_HASH_FILE = "$TEMPLATE_DIRECTORY/core.sha256"
+    local TEMPLATE_HASH_FILE="$TEMPLATE_DIRECTORY/core.sha256"
     TEMPLATE_HASH="";
     [[ -f "$TEMPLATE_HASH_FILE" ]] && TEMPLATE_HASH="$(cat "$TEMPLATE_HASH_FILE")"
     #
@@ -49,45 +49,3 @@ for TEMPLATE_DIRECTORY in "$TEMPLATE_DIR"/*/; do
         create_or_update_core $CORE_NAME $TEMPLATE_DIRECTORY
     fi
 done
-
-# Subshell so set -e / cd don't leak into the entrypoint shell.
-# (
-#   CORE="${SOLR_CORE_NAME:-mycore}"
-#   TEMPLATE="${SOLR_CORE_TEMPLATE:-/template}"   # your configset dir
-#   COREDIR="/var/solr/data/${CORE}"
-#   HASHFILE="${COREDIR}/.template.sha256"
-#
-#   [[ -d "$TEMPLATE" ]] || { echo "[sync-core] template '$TEMPLATE' missing; skip"; exit 0; }
-#
-#   # Hash = file paths + contents, so add/edit/delete/rename all change it.
-#
-#   new_hash="$(hash_dir "$TEMPLATE")"
-#
-#   if [[ ! -d "$COREDIR" ]]; then
-#     echo "[sync-core] creating '$CORE' from template"
-#     mkdir -p "$COREDIR"
-#     cp -a "$TEMPLATE/." "$COREDIR/"
-#     mkdir -p "$COREDIR/data"
-#     touch "$COREDIR/core.properties"
-#     echo "$new_hash" > "$HASHFILE"
-#     exit 0
-#   fi
-#
-#   old_hash=""; [[ -f "$HASHFILE" ]] && old_hash="$(cat "$HASHFILE")"
-#   if [[ "$new_hash" == "$old_hash" ]]; then
-#     echo "[sync-core] '$CORE' config up to date"
-#     exit 0
-#   fi
-#
-#   echo "[sync-core] template changed (${old_hash:0:12} -> ${new_hash:0:12}); updating '$CORE'"
-#   if command -v rsync >/dev/null 2>&1; then
-#     rsync -a --delete \
-#       --exclude='/data/' --exclude='/core.properties' --exclude='/.template.sha256' \
-#       "$TEMPLATE/" "$COREDIR/"
-#   else
-#     # No rsync in the base image: replace conf/ wholesale (the usual case).
-#     rm -rf "$COREDIR/conf"
-#     cp -a "$TEMPLATE/conf" "$COREDIR/conf"
-#   fi
-#   echo "$new_hash" > "$HASHFILE"
-# )
