@@ -16,7 +16,7 @@ COPY --chown=solr:solr ./template/ /opt/template/
 USER solr
 
 # Compute template hashes.
-COPY --chown=solr:solr ./hash_template.sh /opt/
+COPY --chown=solr:solr --chmod=544 ./hash_template.sh /opt/
 RUN /opt/hash_template.sh
 
 # https://solr.apache.org/guide/solr/latest/configuration-guide/solr-modules.html#installing-a-module
