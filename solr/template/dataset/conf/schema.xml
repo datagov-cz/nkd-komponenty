@@ -102,6 +102,8 @@
 
     <field name="applicable_legislation" type="strings"/>
 
+    <field name="dataset_type" type="strings"/>
+
     <field name="_text_" type="ascii_string" multiValued="true" indexed="true" stored="false"/>
 
   </fields>
