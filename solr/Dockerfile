@@ -3,18 +3,21 @@
 #   stay on the user-managed (aka. standalone) mode.
 FROM solr:9.8.1
 
-# Copy core definitions and script to create cores.
-COPY --chown=solr:solr ./template/ /opt/template/
-COPY --chown=solr:solr ./template-base/ /opt/template-base
-
 # Entry point files.
 COPY --chown=solr:solr ./entrypoint/ /docker-entrypoint-initdb.d/
 
 # Configuration.
 COPY --chown=solr:solr ./log4j2.xml /var/solr/
 
+# Copy core definitions.
+COPY --chown=solr:solr ./template/ /opt/template/
+
 # Change user.
 USER solr
+
+# Compute template hashes.
+COPY --chown=solr:solr ./hash_template.sh /opt/
+RUN /opt/hash_template.sh
 
 # https://solr.apache.org/guide/solr/latest/configuration-guide/solr-modules.html#installing-a-module
 # Enable modules for language specific features.
