@@ -25,7 +25,7 @@ create_or_update_core() {
     TEMPLATE_HASH="";
     [[ -f "$TEMPLATE_HASH_FILE" ]] && TEMPLATE_HASH="$(cat "$TEMPLATE_HASH_FILE")"
     #
-    if [[ "$new_hash" == "$prev_hash" ]]; then
+    if [[ "$CORE_HASH" == "$TEMPLATE_HASH" ]]; then
       echo "[sync-core] Existing '$CORE_NAME' core's config up to date."
     else
       echo "[sync-core] Updating existing '$CORE_NAME' core."
