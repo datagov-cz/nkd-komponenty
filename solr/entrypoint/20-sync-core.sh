@@ -30,7 +30,8 @@ create_or_update_core() {
     else
       echo "[sync-core] Updating existing '$CORE_NAME' core."
       rm -rf "$CORE_DIRECTORY/conf"
-      cp -r "$TEMPLATE_DIRECTORY" "$CORE_DIRECTORY"
+      # As the directory exists we need to copy in a different way.
+      cp -r "$TEMPLATE_DIRECTORY" "$DATA_DIR"
     fi
   else
     # Directory does not exists.
