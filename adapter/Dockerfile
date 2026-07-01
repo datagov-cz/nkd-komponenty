@@ -1,11 +1,10 @@
-ARG DEPLOYMENT_ENVIRONMENT=main
 
-FROM ghcr.io/datagov-cz/ms-adapter:${DEPLOYMENT_ENVIRONMENT} AS ms-adapter
+FROM ghcr.io/datagov-cz/ms-adapter:2026-07-01-9336a32 AS ms-adapter
 
-FROM ghcr.io/datagov-cz/isds-adapter:${DEPLOYMENT_ENVIRONMENT} AS isds-adapter
+FROM ghcr.io/datagov-cz/isds-adapter:2026-07-01-b3c9219 AS isds-adapter
 
 # The final image.
-FROM eclipse-temurin:21
+FROM eclipse-temurin:25-jre-noble
 
 # Install cron.
 RUN apt-get update && apt-get install cron -y
