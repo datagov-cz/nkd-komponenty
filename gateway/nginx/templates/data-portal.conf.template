@@ -25,7 +25,7 @@ server {
   # Advertise HTTP/3 to clients
   # add_header Alt-Svc 'h3=":443"; ma=86400' always;
 
-  # We need bigger proxy buffer.
+  # We need bigger proxy buffer for SPARQL results.
   proxy_buffer_size         128k;
   proxy_buffers             4 256k;
   proxy_busy_buffers_size   256k;
@@ -47,7 +47,17 @@ server {
     proxy_pass http://nkd-portal-data-gov-cz;
   }
 
-  # https://github.com/datagov-cz/nkd/tree/main/skripty/nkd-frontend/nginx
+  # priority section as NginX checks in order
+
+  location ~ ^/((dataset|datová-sada|datasets|datové-sady).*) {
+    include hsts-cors.conf;
+
+    proxy_pass http://nkd-catalog;
+    proxy_pass_request_headers          on;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_intercept_errors              on;
+  }
 
   # nkd-design-system
 
@@ -244,16 +254,6 @@ server {
   }
 
   location ~ ^/((aplikace|application|detail-aplikace|application-detail).*) {
-    include hsts-cors.conf;
-
-    proxy_pass http://nkd-catalog;
-    proxy_pass_request_headers          on;
-    proxy_set_header   X-Real-IP        $remote_addr;
-    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-    proxy_intercept_errors              on;
-  }
-
-  location ~ ^/((dataset|datová-sada|datasets|datové-sady).*) {
     include hsts-cors.conf;
 
     proxy_pass http://nkd-catalog;
