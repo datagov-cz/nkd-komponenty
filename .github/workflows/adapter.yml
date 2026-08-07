@@ -2,10 +2,11 @@ name: Publish Docker image
 
 on:
   push:
+    paths:
+      - ".github/workflows/adapter.yml"
+      - "adapter/**"
     branches:
       - "main"
-    tags:
-      - "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"
 
 jobs:
   publish-docker:
@@ -13,6 +14,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for relevant changes
+        id: changes
+        if: github.ref_type == "tag"
+        run: |
+          PREV_TAG=$(git tag --sort=-refname | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' | grep -A1 "^${{ github.ref_name }}$" | tail -n1)
+          if [ -z "$PREV_TAG" ] || [ "$PREV_TAG" == "${{ github.ref_name }}" ]; then
+            echo "Not previous tag found, treating as first release"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$PREV_TAG" "${{ github.ref_name }}" -- adapter/ .github/workflows/adapter.yml; then
+            echo "No relevant changes between $PREV_TAG and ${{ github.ref_name }}"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Relevant changes found between $PREV_TAG and ${{ github.ref_name }}"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -36,6 +55,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push
+        # Build and push only when we are not on tag,
+        # or there has been a change.
+        if: github.ref_type != 'tag' || steps.changes.outputs.changed == 'true'
         uses: docker/build-push-action@v7
         with:
           context: ./adapter/

@@ -7,8 +7,6 @@ on:
       - "virtuoso/**"
     branches:
       - "main"
-    tags:
-      - "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"
 
 env:
   REGISTRY: ghcr.io

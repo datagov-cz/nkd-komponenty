@@ -6,10 +6,7 @@ on:
       - "couchdb/**"
     branches:
       - "main"
-      - "test"
-      - "develop"
-    tags:
-      - "*"
+
 jobs:
   publish-docker:
     runs-on: ubuntu-24.04

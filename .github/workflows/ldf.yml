@@ -5,11 +5,8 @@ on:
       - ".github/workflows/ldf.yml"
       - "ldf/**"
     branches:
-      - "main"
-      - "test"
       - "develop"
-    tags:
-      - "*"
+
 jobs:
   publish-docker:
     runs-on: ubuntu-24.04
