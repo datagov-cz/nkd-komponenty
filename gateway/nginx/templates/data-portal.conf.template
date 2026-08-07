@@ -57,6 +57,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "dataset-list" location::catalog;
   }
 
   # nkd-design-system
@@ -74,6 +76,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "proxy" location::assets;
   }
 
   # nkd-graphql
@@ -86,6 +90,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "proxy" location::graphql;
   }
 
   # nkd-virtuoso-ndc
@@ -94,7 +100,7 @@ server {
     include hsts-cors.conf;
 
     if ($http_accept ~ "application/ld\+json") {
-            rewrite (.*) https://$DATA_PORTAL_DOMAIN_NAME/sparql?query=define%20sql%3Adescribe-mode%20"CBD"%20%20DESCRIBE%20<$scheme://$host$request_uri>&output=application%2Fld%2Bjson ;
+      rewrite (.*) https://$DATA_PORTAL_DOMAIN_NAME/sparql?query=define%20sql%3Adescribe-mode%20"CBD"%20%20DESCRIBE%20<$scheme://$host$request_uri>&output=application%2Fld%2Bjson ;
     }
 
     proxy_pass http://nkd-virtuoso-ndc:8890/describe/?url=https://$DATA_PORTAL_DOMAIN_NAME$uri;
@@ -108,6 +114,8 @@ server {
     sub_filter_once off;
     sub_filter 'href="http://$DATA_PORTAL_DOMAIN_NAME' 'href="https://$DATA_PORTAL_DOMAIN_NAME';
     sub_filter 'src="http://$DATA_PORTAL_DOMAIN_NAME' 'src="https://$DATA_PORTAL_DOMAIN_NAME';
+
+    vhost_traffic_status_filter_by_set_key "resources" location::virtuoso;
   }
 
   location /sparql {
@@ -124,6 +132,8 @@ server {
     proxy_send_timeout                  2400;
     proxy_read_timeout                  2400;
     send_timeout                        2400;
+
+    vhost_traffic_status_filter_by_set_key "sparql" location::virtuoso;
   }
 
   location /sparql-graph-crud {
@@ -140,6 +150,8 @@ server {
     proxy_send_timeout                  2400;
     proxy_read_timeout                  2400;
     send_timeout                        2400;
+
+    vhost_traffic_status_filter_by_set_key "sparql" location::virtuoso;
   }
 
   location /sparql-graph-crud-auth {
@@ -164,6 +176,8 @@ server {
     sub_filter_once off;
     sub_filter 'href="http://data.gov.cz' 'href="https://data.gov.cz';
     sub_filter 'src="http://data.gov.cz' 'src="https://data.gov.cz';
+
+    vhost_traffic_status_filter_by_set_key "facet" location::virtuoso;
   }
 
   # nkd-virtuoso-vocabulary
@@ -182,6 +196,8 @@ server {
     proxy_send_timeout                  2400;
     proxy_read_timeout                  2400;
     send_timeout                        2400;
+
+    vhost_traffic_status_filter_by_set_key "sparql" location::virtuoso;
   }
 
   location = /slovníky/sparql-graph-crud {
@@ -198,6 +214,8 @@ server {
     proxy_send_timeout                  2400;
     proxy_read_timeout                  2400;
     send_timeout                        2400;
+
+    vhost_traffic_status_filter_by_set_key "sparql" location::virtuoso;
   }
 
   location /slovníky/sparql-graph-crud-auth {
@@ -224,6 +242,8 @@ server {
     proxy_pass_request_headers          on;
     proxy_set_header   Host             $http_host;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "proxy" location::ldf;
   }
 
   # nkd-catalog
@@ -236,6 +256,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "assets" location::catalog;
   }
 
   location /api/v2/catalog/ {
@@ -251,6 +273,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "api" location::catalog;
   }
 
   location ~ ^/((aplikace|application|detail-aplikace|application-detail).*) {
@@ -261,6 +285,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "applications" location::catalog;
   }
 
   location ~ ^/((poskytovatelé|publishers).*) {
@@ -271,6 +297,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "publishers" location::catalog;
   }
 
   location ~ ^/((klíčová-slova|keywords).*) {
@@ -281,6 +309,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "keywords" location::catalog;
   }
 
   location ~ ^/((lokální-katalogy|local-catalogs).*) {
@@ -291,6 +321,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "local-catalogs" location::catalog;
   }
 
   location ~ ^/((návrhy-na-datové-sady-k-otevření|suggestions-for-datasets-to-be-opened|návrh-na-datovou-sadu-k-otevření|suggestion-for-dataset-to-be-opened).*) {
@@ -301,6 +333,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "suggestions" location::catalog;
   }
 
   # nkd-forms
@@ -313,6 +347,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "api" location::forms;
   }
 
   location /formulář/ {
@@ -323,6 +359,8 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_intercept_errors              on;
+
+    vhost_traffic_status_filter_by_set_key "static" location::forms;
   }
 
   # nkd-public-data
@@ -384,6 +422,8 @@ server {
     proxy_set_header x-caais-token $caais_token;
 
     error_page 401 = @caais_login_redirect;
+
+    vhost_traffic_status_filter_by_set_key "proxy" location::registration-manager;
   }
 
   # caais
@@ -399,6 +439,8 @@ server {
     proxy_set_header Host             $host;
     proxy_set_header X-Real-IP        $remote_addr;
     proxy_set_header X-Forwarded-Uri  $request_uri;
+
+    vhost_traffic_status_filter_by_set_key "proxy" location::caais;
   }
 
   location = /authenticate {
