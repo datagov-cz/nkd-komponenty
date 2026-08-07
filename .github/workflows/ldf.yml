@@ -5,7 +5,7 @@ on:
       - ".github/workflows/ldf.yml"
       - "ldf/**"
     branches:
-      - "develop"
+      - "main"
 
 jobs:
   publish-docker:
