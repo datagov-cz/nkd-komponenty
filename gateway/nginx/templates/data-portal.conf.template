@@ -1,6 +1,10 @@
 
 proxy_cache_path /var/cache/nginx/global_cache/ levels=1:2 keys_zone=global_cache:64m max_size=8g inactive=60m use_temp_path=off;
 
+limit_conn_zone $binary_remote_addr zone=dataset_list:10m;
+
+limit_req_zone $dataset_key zone=dataset_req:10m rate=200r/s;
+
 server {
 
   server_name  $DATA_PORTAL_DOMAIN_NAME;
@@ -59,6 +63,10 @@ server {
     proxy_intercept_errors              on;
 
     vhost_traffic_status_filter_by_set_key "dataset-list" location::catalog;
+
+    limit_req_dry_run on;
+    limit_req zone=dataset_req burst=300 nodelay;
+    limit_req_status 429;
   }
 
   # nkd-design-system
