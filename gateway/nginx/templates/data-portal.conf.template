@@ -3,7 +3,8 @@ proxy_cache_path /var/cache/nginx/global_cache/ levels=1:2 keys_zone=global_cach
 
 limit_conn_zone $binary_remote_addr zone=dataset_list:10m;
 
-limit_req_zone $dataset_key zone=dataset_req:10m rate=200r/s;
+limit_req_zone $dataset_key zone=dataset_req:10m rate=300r/s;
+limit_req_dry_run on;
 
 server {
 
@@ -64,7 +65,7 @@ server {
 
     vhost_traffic_status_filter_by_set_key "dataset-list" location::catalog;
 
-    limit_req_dry_run on;
+    set $dataset_key "dataset";
     limit_req zone=dataset_req burst=300 nodelay;
     limit_req_status 429;
   }
