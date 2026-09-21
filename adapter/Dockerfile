@@ -1,7 +1,7 @@
 
 FROM ghcr.io/datagov-cz/ms-adapter:2026-07-01-9336a32 AS ms-adapter
 
-FROM ghcr.io/datagov-cz/isds-adapter:2026-07-01-b3c9219 AS isds-adapter
+FROM ghcr.io/datagov-cz/isds-adapter:2026-09-21-b7685d0 AS isds-adapter
 
 # The final image.
 FROM eclipse-temurin:25-jre-noble
