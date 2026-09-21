@@ -7,6 +7,7 @@ on:
       - "solr/**"
     branches:
       - "main"
+      - "develop"
 
 jobs:
   build-and-push:
@@ -17,7 +18,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
-
 
       - name: Collect metadata
         id: meta
