@@ -78,7 +78,7 @@
 
     <field name="publication_plan" type="string" indexed="false" docValues="false"/>
 
-    <field name="source" type="string"/>
+    <field name="source" type="strings"/>
 
     <field name="_text_" type="ascii_string" multiValued="true" indexed="true" stored="false"/>
 
