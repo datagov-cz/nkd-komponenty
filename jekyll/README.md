@@ -19,6 +19,8 @@ GITHUB_REPOSITORY=datagov-cz/data.gov.cz
 GITHUB_SECRET=
 # Port pro Apache server.
 PORT=80
+# Konfigurace k předání příkazu "jekyll build".
+JEKYLL_BUILD_CONFIGURATION=
 ```
 
 ## Datová úložiště
