@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:26.12.1-slim
 
 WORKDIR /opt/linked-data-fragments
 RUN chown 1000:1000 .
