@@ -5,6 +5,7 @@
   "scripts": {},
   "dependencies": {
     "@ldf/server": "^3.3.0",
-    "express": "^5.1.0"
+    "express": "^5.3.0",
+    "hdt": "^3.3.2"
   }
 }
