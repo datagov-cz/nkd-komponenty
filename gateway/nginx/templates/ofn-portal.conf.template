@@ -23,8 +23,7 @@ server {
   error_page 404 @404_page;
   location @404_page {
     internal;
-    rewrite ^ /404.html break;
-    proxy_pass http://nkd-portal-data-gov-cz;
+    return 302 https://$DATA_PORTAL_DOMAIN_NAME/404.html;
   }
 
   # Redirect root access to the data portal.
