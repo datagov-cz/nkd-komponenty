@@ -1,35 +1,33 @@
 #!/bin/sh
 
-# Make sure mounting point is owned by www-data.
-if [ -d "/data/" ]; then
-  # This is the expected state.
-  :
-else
+# Content is created and built as www-data.
+if [ ! -d "/data/" ]; then
   # The image is running without the mount point.
   mkdir /data/
   chown www-data:www-data /data/
 fi
 
+if [ ! -d "/data/site/" ]; then
+  mkdir /data/site/
+  chown www-data:www-data /data/site/
+fi
+
 # Download data portal content.
-if [ -d "/data/website/" ]; then
-  :
-else
+if [ ! -d "/data/website/" ]; then
   mkdir /data/website/
   chown www-data:www-data /data/website/
-  su www-data -s /bin/bash -c "cd /data/website/ &&
+  su www-data -s /bin/sh -c "cd /data/website/ &&
     git clone https://github.com/$GITHUB_REPOSITORY.git . "
 fi
 
-# Jekyll compilation.
-# This is our home directory, it must be writable for Jekyll.
-chown www-data:www-data /var/www/
+# Build the website.
+if ! su www-data -s /bin/sh -c '/opt/jekyll/update-content.sh'; then
+  echo "Initial build failed, serving the previous build if any."
+fi
 
-# Rebuild repository.
-su www-data -s /bin/bash -c '/opt/jekyll/update-content.sh'
-
-# Print debug message.
-
+# Start webhook listener for GitHub push events.
 echo "Watching remote '$GITHUB_REPOSITORY' branch '$GITHUB_BRANCH'."
+su www-data -s /bin/sh -c 'webhook -hooks /etc/webhook/hooks.json -template -ip 127.0.0.1 -port 9000 -verbose' &
 
-# Start PHP server.
-apache2-foreground
+# Start nginx using the image entrypoint, it renders the configuration templates.
+exec /docker-entrypoint.sh nginx -g 'daemon off;'

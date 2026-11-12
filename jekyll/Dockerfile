@@ -1,34 +1,38 @@
-FROM php:8.3.36-apache
+FROM nginx:1.31.8
 
-# Use the default production configuration.
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+# Install packages.
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    git \
+    ruby-full \
+    webhook && \
+  rm -rf /var/lib/apt/lists/*
 
-# Install packages
-RUN apt update && \
-  apt install -y --no-install-recommends git ruby-full build-essential wget unzip
+# Home directory of www-data, Jekyll and Bundler need it to be writable.
+RUN mkdir -p /var/www && chown www-data:www-data /var/www
 
-# Server configuration
-RUN a2enmod rewrite
-
-# Install Ruby and Jekyll.
+# Install Jekyll.
 WORKDIR /opt/jekyll
 RUN gem install bundler
 COPY ./jekyll/Gemfile ./jekyll/Gemfile.lock ./
 RUN bundle install
 
-# Configure apache.
-COPY ./apache2/sites-enabled/ /etc/apache2/sites-enabled/
-COPY ./apache2/ports.conf /etc/apache2/ports.conf
+# Configure nginx, the template is rendered on start by the nginx entrypoint.
+RUN rm /etc/nginx/conf.d/default.conf
+COPY ./nginx/templates/ /etc/nginx/templates/
 
-# Copy API.
-COPY --chown=www-data:www-data ./api/ /var/www/api/
+# Configure webhook.
+COPY ./webhook/hooks.json /etc/webhook/hooks.json
 
 # Copy entrypoint.
-COPY --chown=www-data:www-data --chmod=0744 ./jekyll-entrypoint.sh /
+COPY --chmod=0755 ./jekyll-entrypoint.sh /
 
-# Copy other script
-WORKDIR /opt/jekyll
-COPY --chown=www-data:www-data --chmod=0744 ./script/* ./
+# Copy other scripts.
+COPY --chmod=0755 ./script/* /opt/jekyll/
+
+ENV PORT=80
 
 WORKDIR /
 CMD ["/jekyll-entrypoint.sh"]

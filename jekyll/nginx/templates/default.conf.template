@@ -1,0 +1,27 @@
+server {
+  listen ${PORT};
+
+  # Points to the latest successful build, see update-content.sh.
+  root /data/site/current;
+  index index.html;
+
+  # Use relative redirects, the public host and port are set by the gateway.
+  absolute_redirect off;
+
+  location / {
+    # Serve .html for extension less requests.
+    try_files $uri $uri.html $uri/ =404;
+  }
+
+  # GitHub push webhook, handled by webhook running on localhost.
+  location = /api/on-github-push-data.php {
+    limit_except POST {
+      deny all;
+    }
+    # GitHub caps payloads at 25 MB.
+    client_max_body_size 25m;
+    proxy_pass http://127.0.0.1:9000/hooks/on-github-push;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+
+}
